@@ -1,0 +1,34 @@
+import { CustomerHistoryData as ServiceCustomerHistory, DeletedItem as ServiceDeletedItem } from '../../Services/customerHistoryService';
+
+// Define the shape of a deleted item in our component
+export interface DeletedItem {
+  id: string;
+  product_name: string;
+  product_type: string;
+  price: number;
+  quantity: number;
+  deleted_at: string;
+  item_code?: string;
+}
+
+// Define the shape of customer history data in our component
+export interface CustomerHistory extends Omit<ServiceCustomerHistory, 'mobileNo' | 'totalDeletedItems' | 'totalDeletedValue' | 'deletedItems'> {
+  customer_name: string;
+  mobile_no?: string;
+  total_deleted_items: number;
+  total_deleted_value: number;
+  deleted_items: DeletedItem[];
+}
+
+export interface SearchResult {
+  id: string;
+  customer_id: string;
+  customer_name: string;
+  mobile_no?: string;
+  email?: string;
+  total_deleted_items: number;
+  total_deleted_value: number;
+  updated_at: string;
+}
+
+export type SearchField = 'name' | 'mobile';
