@@ -759,13 +759,13 @@ class PrescriptionService {
     }
   }
 
-  // Fetch the oldest prescription (First) by updated_at
+  // Fetch the oldest prescription (First) by created_at
   async getFirstPrescription(): Promise<PrescriptionData | null> {
     try {
       const { data, error } = await supabase
         .from('prescriptions')
         .select('id')
-        .order('updated_at', { ascending: true })
+        .order('created_at', { ascending: true })
         .limit(1);
       if (error || !data || data.length === 0) return null;
       return this.getPrescription(data[0].id);
@@ -775,13 +775,13 @@ class PrescriptionService {
     }
   }
 
-  // Fetch the newest prescription (Last) by updated_at
+  // Fetch the newest prescription (Last) by created_at
   async getLastPrescription(): Promise<PrescriptionData | null> {
     try {
       const { data, error } = await supabase
         .from('prescriptions')
         .select('id')
-        .order('updated_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1);
       if (error || !data || data.length === 0) return null;
       return this.getPrescription(data[0].id);

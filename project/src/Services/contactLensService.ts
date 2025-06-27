@@ -1533,11 +1533,11 @@ export const getDetailedContactLensData = async (contactLensPrescriptionId: stri
  * All use updated_at for ordering and hydrate the full record for the form
  */
 export const getFirstContactLens = async () => {
-  // Get the oldest (first) contact lens prescription by updated_at
+  // Get the oldest (first) contact lens prescription by created_at
   const { data, error } = await supabase
     .from('contact_lens_prescriptions')
     .select('id')
-    .order('updated_at', { ascending: true })
+    .order('created_at', { ascending: true })
     .limit(1)
     .maybeSingle();
   if (error || !data) return { success: false, message: error?.message || 'No records found', data: null };
@@ -1545,11 +1545,11 @@ export const getFirstContactLens = async () => {
 };
 
 export const getLastContactLens = async () => {
-  // Get the most recent (last) contact lens prescription by updated_at
+  // Get the most recent (last) contact lens prescription by created_at
   const { data, error } = await supabase
     .from('contact_lens_prescriptions')
     .select('id')
-    .order('updated_at', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
   if (error || !data) return { success: false, message: error?.message || 'No records found', data: null };

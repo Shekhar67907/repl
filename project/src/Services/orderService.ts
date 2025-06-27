@@ -452,13 +452,13 @@ const generateUniquePrescriptionNumber = async (maxRetries = 3): Promise<string>
   return `P${now.getTime().toString().slice(-10)}`;
 };
 
-// Navigation methods for orders using updated_at
+// Navigation methods for orders using created_at for First/Last
 const getFirstOrder = async () => {
   try {
     const { data, error } = await supabase
       .from('orders')
       .select('id')
-      .order('updated_at', { ascending: true })
+      .order('created_at', { ascending: true })
       .limit(1);
     if (error || !data || data.length === 0) return null;
     const orderId = data[0].id;
@@ -475,7 +475,7 @@ const getLastOrder = async () => {
     const { data, error } = await supabase
       .from('orders')
       .select('id')
-      .order('updated_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(1);
     if (error || !data || data.length === 0) return null;
     const orderId = data[0].id;
