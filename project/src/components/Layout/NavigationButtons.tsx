@@ -15,7 +15,7 @@ const NavigationButtons: React.FC = () => {
   ];
   
   return (
-    <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 px-4 py-2 bg-gray-50 border-b border-gray-300 w-full">
+    <div className="grid grid-cols-2 gap-2 md:flex md:flex-row md:space-x-2 md:space-y-0 px-4 py-2 bg-gray-50 border-b border-gray-300 w-full">
       {navigationButtons.map((button) => (
         <Button
           key={button.name}

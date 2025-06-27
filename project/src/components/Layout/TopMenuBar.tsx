@@ -69,11 +69,11 @@ const TopMenuBar: React.FC = () => {
   
   return (
     <div className="bg-gray-100 border-b border-gray-300">
-      <div className="flex">
+      <div className="w-full overflow-x-auto whitespace-nowrap flex">
         {menuItems.map((item) => (
           <div key={item.name} className="relative">
             <button
-              className={`px-4 py-1 text-sm hover:bg-gray-200 transition-colors ${
+              className={`px-2 md:px-4 py-1 text-sm hover:bg-gray-200 transition-colors ${
                 activeMenu === item.name ? 'bg-gray-200' : ''
               }`}
               onClick={() => handleMenuClick(item.name)}
