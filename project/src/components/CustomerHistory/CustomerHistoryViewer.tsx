@@ -328,26 +328,11 @@ const CustomerHistoryViewer: React.FC = () => {
         )}
       </div>
       
-      {/* Debug Panel - Always visible for now */}
-      <div className="fixed top-4 right-4 bg-black bg-opacity-80 text-white p-4 rounded-lg z-50 max-w-xs">
-        <h4 className="font-bold mb-2">Debug Panel</h4>
-        <div className="text-sm space-y-1">
-          <div>Search: "{searchValue}"</div>
-          <div>Results: {searchResults.length}</div>
-          <div>Show Results: {showResults.toString()}</div>
-          <div>Searching: {isSearching.toString()}</div>
-        </div>
-      </div>
-      
       {/* Search Section */}
       <Card className="p-4 mb-6 bg-white shadow-sm rounded-lg relative" style={{ zIndex: 100, overflow: 'visible' }}>
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-end" style={{ overflow: 'visible' }}>
           <div className="w-full md:flex-1" ref={searchContainerRef}>
             <div className="relative">
-              {/* Debug Overlay */}
-              <div className="absolute -top-8 left-0 text-xs text-red-600 font-mono">
-                {showResults ? 'Results: SHOWING' : 'Results: HIDDEN'}
-              </div>
               <div className="flex items-stretch border border-gray-300 rounded-md overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
                 <div className="relative flex-shrink-0 w-36">
                   <Select
