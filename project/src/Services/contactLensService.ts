@@ -1250,69 +1250,67 @@ export const searchContactLensPatients = async (searchField: string, searchValue
         };
 
       case 'ref_no':
-        // Search by reference number (custom field in your system)
-        // This assumes ref_no is stored somewhere - adapt as needed
-        const { data: refData, error: refError } = await supabase
-          .from('prescriptions')
+        // Search by reference number in contact_lens_prescriptions (exact match)
+        const { data: clData, error: clError } = await supabase
+          .from('contact_lens_prescriptions')
           .select(`
             id,
-            prescription_no,
-            name,
-            gender,
-            age,
-            class,
-            prescribed_by,
-            mobile_no,
-            email,
-            address,
-            city,
-            state,
-            pin_code,
-            date,
-            ref_no,
+            prescription_id,
+            reference_no,
+            booked_by,
+            delivery_date,
+            delivery_time,
+            status,
+            retest_date,
+            expiry_date,
+            remarks,
             birth_day,
             marriage_anniversary
           `)
-          .ilike('ref_no', `%${searchValue}%`);
+          .eq('reference_no', searchValue);
 
-        if (refError) {
-          logError('Error searching by reference number:', refError);
-          return { success: false, message: `Error searching: ${refError.message}`, data: [] };
+        if (clError) {
+          logError('Error searching contact lens prescriptions by reference number:', clError);
+          return { success: false, message: `Error searching: ${clError.message}`, data: [] };
         }
 
-        // For each found prescription, get any contact lens data
-        const refResults = await Promise.all(refData.map(async (prescription) => {
-          const { data: contactLensData } = await supabase
-            .from('contact_lens_prescriptions')
+        // For each found contact lens prescription, get the related customer info from prescriptions
+        const clResults = await Promise.all(clData.map(async (cl) => {
+          const { data: prescription } = await supabase
+            .from('prescriptions')
             .select(`
               id,
-              prescription_id,
-              booked_by,
-              delivery_date,
-              delivery_time,
-              status,
-              retest_date,
-              expiry_date,
-              remarks,
+              prescription_no,
+              name,
+              gender,
+              age,
+              class,
+              prescribed_by,
+              mobile_no,
+              email,
+              address,
+              city,
+              state,
+              pin_code,
+              date,
               birth_day,
               marriage_anniversary
             `)
-            .eq('prescription_id', prescription.id)
+            .eq('id', cl.prescription_id)
             .maybeSingle();
 
           return {
             ...prescription,
-            contactLensData: contactLensData || null,
-            // Merge birth_day and marriage_anniversary for UI autopopulation
-            birth_day: contactLensData?.birth_day || prescription.birth_day || null,
-            marriage_anniversary: contactLensData?.marriage_anniversary || prescription.marriage_anniversary || null
+            contactLensData: cl,
+            birth_day: cl.birth_day || prescription?.birth_day || null,
+            marriage_anniversary: cl.marriage_anniversary || prescription?.marriage_anniversary || null
           };
         }));
 
         return { 
           success: true, 
-          message: `Found ${refResults.length} matching prescriptions`, 
-          data: refResults 
+          message: `Found ${clResults.length} matching contact lens prescriptions`, 
+          data: clResults 
         };
 
       default:

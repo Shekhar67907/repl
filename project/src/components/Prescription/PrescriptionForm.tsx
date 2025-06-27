@@ -28,6 +28,7 @@ import {
 import LensPrescriptionSection from './LensPrescriptionSection';
 import { useNavigate } from 'react-router-dom';
 import { logInfo, logError, logDebug, logDev, logWarn } from '../../utils/logger';
+import { supabase } from '../../Services/supabaseService';
 
 interface PrescriptionFormProps {
   onSubmit: (data: PrescriptionData) => void;
@@ -346,7 +347,79 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onSubmit, initialDa
     return value;
   }; */
 
+  // Helper to check reference number uniqueness
+  const validateReferenceNumber = async (referenceNo: string, currentId?: string): Promise<boolean> => {
+    if (!referenceNo) return true;
+    let query = supabase
+      .from('prescriptions')
+      .select('id')
+      .eq('reference_no', referenceNo);
+    if (currentId) {
+      query = query.neq('id', currentId);
+    }
+    const { data, error } = await query.maybeSingle();
+    if (error) {
+      logError('Error validating reference number:', error);
+      setNotification({
+        message: 'Error validating reference number. Please try again.',
+        type: 'error',
+        visible: true
+      });
+      return false;
+    }
+    if (data) {
+      setNotification({
+        message: 'This reference number is already in use. Please use a different one.',
+        type: 'error',
+        visible: true
+      });
+      return false;
+    }
+    return true;
+  };
+
+  // Helper to check prescription number uniqueness
+  const validatePrescriptionNo = async (prescriptionNo: string, currentId?: string): Promise<boolean> => {
+    if (!prescriptionNo) return true;
+    let query = supabase
+      .from('prescriptions')
+      .select('id')
+      .eq('prescription_no', prescriptionNo);
+    if (currentId) {
+      query = query.neq('id', currentId);
+    }
+    const { data, error } = await query.maybeSingle();
+    if (error) {
+      logError('Error validating prescription number:', error);
+      setNotification({
+        message: 'Error validating prescription number. Please try again.',
+        type: 'error',
+        visible: true
+      });
+      return false;
+    }
+    if (data) {
+      setNotification({
+        message: 'This prescription number is already in use. Please use a different one.',
+        type: 'error',
+        visible: true
+      });
+      return false;
+    }
+    return true;
+  };
+
   const manualSave = async () => {
+    // Prescription number uniqueness check before saving
+    if (formData.prescriptionNo) {
+      const isUnique = await validatePrescriptionNo(formData.prescriptionNo, (formData as any).id);
+      if (!isUnique) return { success: false };
+    }
+    // Reference number uniqueness check before saving
+    if (formData.referenceNo) {
+      const isValid = await validateReferenceNumber(formData.referenceNo, (formData as any).id);
+      if (!isValid) return { success: false };
+    }
     try {
       // Call the onSubmit prop with the form data
       onSubmit(formData);
@@ -546,8 +619,12 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onSubmit, initialDa
         />
       )}
       {isSaving && (
-        <div className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow">
-          Saving...
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow flex flex-col items-center">
+            <div className="loader mb-2" style={{ width: 32, height: 32, border: '4px solid #3b82f6', borderTop: '4px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+            <span className="text-blue-600 font-semibold">Saving...</span>
+          </div>
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
         </div>
       )}
       
@@ -812,6 +889,8 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({ onSubmit, initialDa
           handleChange={handleChange}
           handleNumericInputChange={handleNumericInput}
           handleCheckboxChange={handleCheckboxChange}
+          setNotification={setNotification}
+          loading={isSaving}
         />
         
         {/* Remarks Section */}

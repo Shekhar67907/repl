@@ -1185,6 +1185,7 @@ const OrderCardForm: React.FC = () => {
       // Create a new object with all the essential data
       const updatedData = {
         ...prevData,
+        id: suggestion.id, // Ensure id is always set from the suggestion
         // Override with the generated prescription number and reference number
         prescriptionNo: prescriptionNumber,
         referenceNo: referenceNumber,
@@ -1693,7 +1694,10 @@ const OrderCardForm: React.FC = () => {
     }
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const saveOrderToDatabase = async () => {
+    setIsSaving(true);
     try {
       logInfo('Starting to save order to database', { prescriptionNo: formData.prescriptionNo, referenceNo: formData.referenceNo });
       
@@ -2428,6 +2432,8 @@ const OrderCardForm: React.FC = () => {
         type: 'error',
         visible: true,
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -3261,10 +3267,10 @@ const OrderCardForm: React.FC = () => {
       </Card>
 
       {/* Render the Toast Notification */}
-      {notification.visible && (
+      {(notification.visible || isSaving) && (
       <ToastNotification
-        message={notification.message}
-        type={notification.type}
+        message={isSaving ? 'Saving...' : notification.message}
+        type={isSaving ? 'success' : notification.type}
         onClose={() => setNotification({ ...notification, visible: false })}
       />
       )}

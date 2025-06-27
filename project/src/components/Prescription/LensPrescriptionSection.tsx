@@ -23,6 +23,8 @@ interface LensPrescriptionSectionProps {
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
   handleNumericInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setNotification?: (n: { message: string; type: 'success' | 'error'; visible: boolean }) => void;
+  loading?: boolean;
 }
 
 const LensPrescriptionSection: React.FC<LensPrescriptionSectionProps> = ({
@@ -30,6 +32,8 @@ const LensPrescriptionSection: React.FC<LensPrescriptionSectionProps> = ({
   handleChange,
   handleNumericInputChange,
   handleCheckboxChange,
+  setNotification,
+  loading
 }) => {
   const [warnings, setWarnings] = useState<{
     rightEye: string[],
@@ -498,7 +502,11 @@ const LensPrescriptionSection: React.FC<LensPrescriptionSectionProps> = ({
                     const value = parseFloat(e.target.value);
                     if (!isNaN(value)) {
                       if (value < 25 || value > 38) {
-                        alert(`RPD must be between 25-38mm. You entered: ${value}mm`);
+                        setNotification && setNotification({
+                          message: `RPD must be between 25-38mm. You entered: ${value}mm`,
+                          type: 'error',
+                          visible: true
+                        });
                       }
                       handleChange({
                         target: {
@@ -591,7 +599,11 @@ const LensPrescriptionSection: React.FC<LensPrescriptionSectionProps> = ({
                     const value = parseFloat(e.target.value);
                     if (!isNaN(value)) {
                       if (value < 25 || value > 38) {
-                        alert(`LPD must be between 25-38mm. You entered: ${value}mm`);
+                        setNotification && setNotification({
+                          message: `LPD must be between 25-38mm. You entered: ${value}mm`,
+                          type: 'error',
+                          visible: true
+                        });
                       }
                       handleChange({
                         target: {

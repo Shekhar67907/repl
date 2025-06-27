@@ -3,7 +3,7 @@ import { X, Minus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getTodayDate } from '../../utils/helpers';
 import CustomerSearch from './CustomerSearch';
-import { getCustomerDetails, getCustomerPurchaseHistory } from '../../Services/billingService';
+import { getCustomerPurchaseHistory, getCustomerDetails } from '../../Services/billingService';
 import { getNormalizedMobile, getNormalizedName, getNormalizedNumber, getNormalizedPinCode } from '../../utils/dataNormalization';
 import { logDebug, logError, logInfo } from '../../utils/logger';
 
